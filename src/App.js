@@ -87,21 +87,26 @@ class App extends Component {
 			endDate = new Date(this.state.endDate);
 		//
 		console.log('creating wise old man competition...');
-		// const newCompetition = await client.competitions.createCompetition({
-		// 	title: this.state.competitionTitleName,
-		// 	metric: Metric[this.state.selected],
-		// 	// startsAt: addHoursToDate(new Date(this.state.startDate), 5).toISOString(), 	//need plus 5 hours to get to central time it seems from my central local time
-		// 	// endsAt: addHoursToDate(new Date(this.state.endDate), 5).toISOString(),		//need plus 5 hours to get to central time it seems from my central local time
-		// 	startsAt: startDate,
-		// 	endsAt: endDate,
-		// 	groupId: 5404,
-		// 	groupVerificationCode: '687-342-029',
-		// 	// participants: ['psikoi', 'usbc', 'sethmare']
-		// });
 
-		// console.log('done:', newCompetition, ', now creating discord event...');
+		if (this.state.selected === '') {
+			alert('Please select a competition option to continue');
 
-		console.log('testing discord event creation...')
+			return;
+		}
+
+		const newCompetition = await client.competitions.createCompetition({
+			title: this.state.competitionTitleName,
+			metric: Metric[this.state.selected],
+			// startsAt: addHoursToDate(new Date(this.state.startDate), 5).toISOString(), 	//need plus 5 hours to get to central time it seems from my central local time
+			// endsAt: addHoursToDate(new Date(this.state.endDate), 5).toISOString(),		//need plus 5 hours to get to central time it seems from my central local time
+			startsAt: startDate,
+			endsAt: endDate,
+			groupId: 5404,
+			groupVerificationCode: '687-342-029',
+			// participants: ['psikoi', 'usbc', 'sethmare']
+		});
+
+		console.log('done:', newCompetition, ', now creating discord event...');
 
 		const eventData = {
 			name: this.state.competitionTitleName,
@@ -110,13 +115,13 @@ class App extends Component {
 			scheduled_end_time: endDate.toString(),
 			entity_type: 3, // EXTERNAL
 			entity_metadata_location: "Gielinor",
-			description: this.state.competitionTitleName
+			description: `${this.state.competitionTitleName}\n\nhttps://wiseoldman.net/competitions/${newCompetition.competition.id}`
 		};
 
 		const url = new URL(`https://accolades.apps.bot-hosting.cloud/createEvent`);
 		url.search = new URLSearchParams(eventData).toString();
 
-		console.log({url})
+		//@TODO - still getting a error: Access to fetch at 'https://accolades.apps.bot-hosting.cloud/createEvent?name=testing+event+name&privacy_level=2&scheduled_start_time=Sun+Nov+01+2026+00%3A00%3A00+GMT-0500+%28Central+Daylight+Time%29&scheduled_end_time=Sat+Nov+07+2026+23%3A59%3A00+GMT-0600+%28Central+Standard+Time%29&entity_type=3&entity_metadata_location=Gielinor&description=Raid+of+the+Week%0A%0Ahttps%3A%2F%2Fwiseoldman.net%2Fcompetitions%2F163626' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 		fetch(
 			url.href
 			
@@ -124,6 +129,7 @@ class App extends Component {
 			.then(res => res.json())
 			.then(data => console.log("Event created:", data))
 			.catch(err => console.error("Error:", err));
+
 		// fetch(
 		// 	url,
 		// 	{

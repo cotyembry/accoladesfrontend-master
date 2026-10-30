@@ -27,7 +27,7 @@ app.get('/createEvent', async (req, res) => {
             entity_metadata: {
                 location: req.query.entity_metadata_location ? req.query.entity_metadata_location : "Gielinor"
             },
-            description: req.query.name
+            description: req.query.description
 
         };
         try {
