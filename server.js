@@ -31,7 +31,8 @@ app.get('/createEvent', async (req, res) => {
 
         };
         try {
-           // res.send('1 Creating Event' + JSON.stringify(req.query));
+            //create the event in discord
+            // res.send('1 Creating Event' + JSON.stringify(req.query));
             let res2 = await fetch(`https://discord.com/api/v10/guilds/${guildId}/scheduled-events`, {
                 method: "POST",
                 headers: {
@@ -41,6 +42,20 @@ app.get('/createEvent', async (req, res) => {
                 body: JSON.stringify(eventData)
             }),
             data = await res2.json();
+
+
+            //2 post the event information in #event-general using the discord bot
+            const res3 = await fetch(`https://discord.com/api/v10/channels/${eventGeneralId}/messages`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bot ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    content: 'https://discord.com/events/' + eventJustCreatedId + '\n\n@Events @1281049707665428552'
+                })
+            });
+
             res.send('Created discord event');
         }
         catch (error) {
