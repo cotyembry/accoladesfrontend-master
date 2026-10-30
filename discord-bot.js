@@ -12,7 +12,7 @@ client.once(Events.ClientReady, async (readyClient) => {
 		if (guild.available === false) return;
 
 
-		let event = guild.scheduledEvents.create({
+		let event = await guild.scheduledEvents.create({
 			channel: eventGeneral,
 			description: "Raid of the Week",
 			name: "Raid of the Week",

@@ -2,7 +2,6 @@ import logo from './logo.svg';
 import './App.css';
 import { WOMClient, Metric } from '@wise-old-man/utils';
 import {Component, useState} from 'react';
-// import React, { useState } from "react";
 
 const client = new WOMClient({
 	apiKey: 'f2lt6fmp4e6yipahvm47sbld',
@@ -205,19 +204,45 @@ class App extends Component {
 		// console.log(this.state.startDate);
 		// console.log(addHoursToDate(new Date(this.state.startDate), 5).toISOString())
 
+		let startDate = new Date(this.state.startDate),
+			endDate = new Date(this.state.endDate);
+		//
 		const newCompetition = await client.competitions.createCompetition({
 			title: this.state.competitionTitleName,
 			metric: this.getMetric(),
 			// startsAt: addHoursToDate(new Date(this.state.startDate), 5).toISOString(), 	//need plus 5 hours to get to central time it seems from my central local time
 			// endsAt: addHoursToDate(new Date(this.state.endDate), 5).toISOString(),		//need plus 5 hours to get to central time it seems from my central local time
-			startsAt: new Date(this.state.startDate),
-			endsAt: new Date(this.state.endDate),
+			startsAt: startDate,
+			endsAt: endDate,
 			groupId: 5404,
 			groupVerificationCode: '687-342-029',
 			// participants: ['psikoi', 'usbc', 'sethmare']
 		});
 
-		console.log('->', newCompetition);
+		console.log('->', newCompetition, 'creating discord event now');
+
+
+		const eventData = {
+			name: this.state.competitionTitleName,
+			privacy_level: 2, // GUILD_ONLY
+			scheduled_start_time: startDate.toString(),
+			scheduled_end_time: endDate.toString(),
+			entity_type: 3, // EXTERNAL
+			entity_metadata: {
+				location: "Gielinor"
+			},
+			description: this.state.competitionTitleName
+		};
+
+		fetch(`https://accolades.apps.bot-hosting.cloud/createEvent`,{
+				method: 'GET',
+				body: JSON.stringify(eventData),
+				// mode: 'no-cors',
+			})
+			.then(res => res.json())
+			.then(data => console.log("Event created:", data))
+			.catch(err => console.error("Error:", err));
+		
 	}
 	async runCheck() {
 		// 
