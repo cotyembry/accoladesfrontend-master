@@ -67,7 +67,8 @@ class App extends Component {
 		super(props);
 
 		this.state = {
-			competitionTitleName: 'Callisto Boss of the Week',
+			// competitionTitleName: 'Callisto Boss of the Week',
+			competitionTitleName: 'Raid of the Week',
 			message: '',
 			checkIsRunning: false,
 			toUpdate: [],
@@ -81,38 +82,26 @@ class App extends Component {
 	async componentDidMount() {
 				
 	}
-	async createCompetition() {
-		// alert('in create competition');
-		// console.log('selected =', this.state.selected);
-		// console.log('metric =', this.getMetric());
-		// console.log('this.state =', this.state);
-		// console.log(this.state.startDate);
-		// console.log(addHoursToDate(new Date(this.state.startDate), 5).toISOString())
-
-
-		console.log('button clicked', METRICS);
-
-		
-		
+	async createCompetition() {		
 		let startDate = new Date(this.state.startDate),
 			endDate = new Date(this.state.endDate);
-		console.log('would be sending:', {startDate, endDate})
 		//
-		return;
-		const newCompetition = await client.competitions.createCompetition({
-			title: this.state.competitionTitleName,
-			metric: this.getMetric(),
-			// startsAt: addHoursToDate(new Date(this.state.startDate), 5).toISOString(), 	//need plus 5 hours to get to central time it seems from my central local time
-			// endsAt: addHoursToDate(new Date(this.state.endDate), 5).toISOString(),		//need plus 5 hours to get to central time it seems from my central local time
-			startsAt: startDate,
-			endsAt: endDate,
-			groupId: 5404,
-			groupVerificationCode: '687-342-029',
-			// participants: ['psikoi', 'usbc', 'sethmare']
-		});
+		console.log('creating wise old man competition...');
+		// const newCompetition = await client.competitions.createCompetition({
+		// 	title: this.state.competitionTitleName,
+		// 	metric: Metric[this.state.selected],
+		// 	// startsAt: addHoursToDate(new Date(this.state.startDate), 5).toISOString(), 	//need plus 5 hours to get to central time it seems from my central local time
+		// 	// endsAt: addHoursToDate(new Date(this.state.endDate), 5).toISOString(),		//need plus 5 hours to get to central time it seems from my central local time
+		// 	startsAt: startDate,
+		// 	endsAt: endDate,
+		// 	groupId: 5404,
+		// 	groupVerificationCode: '687-342-029',
+		// 	// participants: ['psikoi', 'usbc', 'sethmare']
+		// });
 
-		console.log('->', newCompetition, 'creating discord event now');
+		// console.log('done:', newCompetition, ', now creating discord event...');
 
+		console.log('testing discord event creation...')
 
 		const eventData = {
 			name: this.state.competitionTitleName,
@@ -120,20 +109,31 @@ class App extends Component {
 			scheduled_start_time: startDate.toString(),
 			scheduled_end_time: endDate.toString(),
 			entity_type: 3, // EXTERNAL
-			entity_metadata: {
-				location: "Gielinor"
-			},
+			entity_metadata_location: "Gielinor",
 			description: this.state.competitionTitleName
 		};
 
-		fetch(`https://accolades.apps.bot-hosting.cloud/createEvent`,{
-				method: 'GET',
-				body: JSON.stringify(eventData),
-				// mode: 'no-cors',
-			})
+		const url = new URL(`https://accolades.apps.bot-hosting.cloud/createEvent`);
+		url.search = new URLSearchParams(eventData).toString();
+
+		console.log({url})
+		fetch(
+			url.href
+			
+		)
 			.then(res => res.json())
 			.then(data => console.log("Event created:", data))
 			.catch(err => console.error("Error:", err));
+		// fetch(
+		// 	url,
+		// 	{
+		// 		method: 'GET',
+		// 		mode: 'no-cors'
+		// 	}
+		// )
+		// 	.then(res => res.json())
+		// 	.then(data => console.log("Event created:", data))
+		// 	.catch(err => console.error("Error:", err));
 		
 	}
 	async runCheck() {
@@ -452,120 +452,6 @@ class App extends Component {
 				})
 			}
 		}
-	}
-	getMetric() {
-
-		if (this.state.selected === 'EHP') { return Metric.EHP }
-		else if (this.state.selected === 'EHB') { return Metric.EHB }
-		else if (this.state.selected === 'ABYSSAL_SIRE') { return Metric.ABYSSAL_SIRE }
-		else if (this.state.selected === 'ALCHEMICAL_HYDRA') { return Metric.ALCHEMICAL_HYDRA }
-		else if (this.state.selected === 'AMOXLIATL') { return Metric.AMOXLIATL }
-		else if (this.state.selected === 'ARAXXOR') { return Metric.ARAXXOR }
-		else if (this.state.selected === 'ARTIO') { return Metric.ARTIO }
-		else if (this.state.selected === 'BARROWS_CHESTS') { return Metric.BARROWS_CHESTS }
-		else if (this.state.selected === 'BRYOPHYTA') { return Metric.BRYOPHYTA }
-		else if (this.state.selected === 'CALLISTO') { return Metric.CALLISTO }
-		else if (this.state.selected === 'CALVARION') { return Metric.CALVARION }
-		else if (this.state.selected === 'CERBERUS') { return Metric.CERBERUS }
-		else if (this.state.selected === 'CHAMBERS_OF_XERIC') { return Metric.CHAMBERS_OF_XERIC }
-		else if (this.state.selected === 'CHAMBERS_OF_XERIC_CM') { return Metric.CHAMBERS_OF_XERIC_CM }
-		else if (this.state.selected === 'CHAOS_ELEMENTAL') { return Metric.CHAOS_ELEMENTAL }
-		else if (this.state.selected === 'CHAOS_FANATIC') { return Metric.CHAOS_FANATIC }
-		else if (this.state.selected === 'COMMANDER_ZILYANA') { return Metric.COMMANDER_ZILYANA }
-		else if (this.state.selected === 'CORPOREAL_BEAST') { return Metric.CORPOREAL_BEAST }
-		else if (this.state.selected === 'CRAZY_ARCHAEOLOGIST') { return Metric.CRAZY_ARCHAEOLOGIST }
-		else if (this.state.selected === 'DAGANNOTH_PRIME') { return Metric.DAGANNOTH_PRIME }
-		else if (this.state.selected === 'DAGANNOTH_REX') { return Metric.DAGANNOTH_REX }
-		else if (this.state.selected === 'DAGANNOTH_SUPREME') { return Metric.DAGANNOTH_SUPREME }
-		else if (this.state.selected === 'DERANGED_ARCHAEOLOGIST') { return Metric.DERANGED_ARCHAEOLOGIST }
-		else if (this.state.selected === 'DOOM_OF_MOKHAIOTL') { return Metric.DOOM_OF_MOKHAIOTL }
-		else if (this.state.selected === 'DUKE_SUCELLUS') { return Metric.DUKE_SUCELLUS }
-		else if (this.state.selected === 'GENERAL_GRAARDOR') { return Metric.GENERAL_GRAARDOR }
-		else if (this.state.selected === 'GIANT_MOLE') { return Metric.GIANT_MOLE }
-		else if (this.state.selected === 'GROTESQUE_GUARDIANS') { return Metric.GROTESQUE_GUARDIANS }
-		else if (this.state.selected === 'HESPORI') { return Metric.HESPORI }
-		else if (this.state.selected === 'KALPHITE_QUEEN') { return Metric.KALPHITE_QUEEN }
-		else if (this.state.selected === 'KING_BLACK_DRAGON') { return Metric.KING_BLACK_DRAGON }
-		else if (this.state.selected === 'KRAKEN') { return Metric.KRAKEN }
-		else if (this.state.selected === 'KREEARRA') { return Metric.KREEARRA }
-		else if (this.state.selected === 'KRIL_TSUTSAROTH') { return Metric.KRIL_TSUTSAROTH }
-		else if (this.state.selected === 'LUNAR_CHESTS') { return Metric.LUNAR_CHESTS }
-		else if (this.state.selected === 'MIMIC') { return Metric.MIMIC }
-		else if (this.state.selected === 'NEX') { return Metric.NEX }
-		else if (this.state.selected === 'NIGHTMARE') { return Metric.NIGHTMARE }
-		else if (this.state.selected === 'PHOSANIS_NIGHTMARE') { return Metric.PHOSANIS_NIGHTMARE }
-		else if (this.state.selected === 'OBOR') { return Metric.OBOR }
-		else if (this.state.selected === 'PHANTOM_MUSPAH') { return Metric.PHANTOM_MUSPAH }
-		else if (this.state.selected === 'SARACHNIS') { return Metric.SARACHNIS }
-		else if (this.state.selected === 'SCORPIA') { return Metric.SCORPIA }
-		else if (this.state.selected === 'SCURRIUS') { return Metric.SCURRIUS }
-		else if (this.state.selected === 'SHELLBANE_GRYPHON') { return Metric.SHELLBANE_GRYPHON }
-		else if (this.state.selected === 'SKOTIZO') { return Metric.SKOTIZO }
-		else if (this.state.selected === 'SOL_HEREDIT') { return Metric.SOL_HEREDIT }
-		else if (this.state.selected === 'SPINDEL') { return Metric.SPINDEL }
-		else if (this.state.selected === 'TEMPOROSS') { return Metric.TEMPOROSS }
-		else if (this.state.selected === 'THE_GAUNTLET') { return Metric.THE_GAUNTLET }
-		else if (this.state.selected === 'THE_CORRUPTED_GAUNTLET') { return Metric.THE_CORRUPTED_GAUNTLET }
-		else if (this.state.selected === 'THE_HUEYCOATL') { return Metric.THE_HUEYCOATL }
-		else if (this.state.selected === 'THE_LEVIATHAN') { return Metric.THE_LEVIATHAN }
-		else if (this.state.selected === 'THE_ROYAL_TITANS') { return Metric.THE_ROYAL_TITANS }
-		else if (this.state.selected === 'THE_WHISPERER') { return Metric.THE_WHISPERER }
-		else if (this.state.selected === 'THEATRE_OF_BLOOD') { return Metric.THEATRE_OF_BLOOD }
-		else if (this.state.selected === 'THEATRE_OF_BLOOD_HARD_MODE') { return Metric.THEATRE_OF_BLOOD_HARD_MODE }
-		else if (this.state.selected === 'THERMONUCLEAR_SMOKE_DEVIL') { return Metric.THERMONUCLEAR_SMOKE_DEVIL }
-		else if (this.state.selected === 'TOMBS_OF_AMASCUT') { return Metric.TOMBS_OF_AMASCUT }
-		else if (this.state.selected === 'TOMBS_OF_AMASCUT_EXPERT') { return Metric.TOMBS_OF_AMASCUT_EXPERT }
-		else if (this.state.selected === 'TZKAL_ZUK') { return Metric.TZKAL_ZUK }
-		else if (this.state.selected === 'TZTOK_JAD') { return Metric.TZTOK_JAD }
-		else if (this.state.selected === 'VARDORVIS') { return Metric.VARDORVIS }
-		else if (this.state.selected === 'VENENATIS') { return Metric.VENENATIS }
-		else if (this.state.selected === 'VETION') { return Metric.VETION }
-		else if (this.state.selected === 'VORKATH') { return Metric.VORKATH }
-		else if (this.state.selected === 'WINTERTODT') { return Metric.WINTERTODT }
-		else if (this.state.selected === 'YAMA') { return Metric.YAMA }
-		else if (this.state.selected === 'ZALCANO') { return Metric.ZALCANO }
-		else if (this.state.selected === 'ZULRAH') { return Metric.ZULRAH }
-		else if (this.state.selected === 'LEAGUE_POINTS') { return Metric.LEAGUE_POINTS }
-		else if (this.state.selected === 'BOUNTY_HUNTER_HUNTER') { return Metric.BOUNTY_HUNTER_HUNTER }
-		else if (this.state.selected === 'BOUNTY_HUNTER_ROGUE') { return Metric.BOUNTY_HUNTER_ROGUE }
-		else if (this.state.selected === 'CLUE_SCROLLS_ALL') { return Metric.CLUE_SCROLLS_ALL }
-		else if (this.state.selected === 'CLUE_SCROLLS_BEGINNER') { return Metric.CLUE_SCROLLS_BEGINNER }
-		else if (this.state.selected === 'CLUE_SCROLLS_EASY') { return Metric.CLUE_SCROLLS_EASY }
-		else if (this.state.selected === 'CLUE_SCROLLS_MEDIUM') { return Metric.CLUE_SCROLLS_MEDIUM }
-		else if (this.state.selected === 'CLUE_SCROLLS_HARD') { return Metric.CLUE_SCROLLS_HARD }
-		else if (this.state.selected === 'CLUE_SCROLLS_ELITE') { return Metric.CLUE_SCROLLS_ELITE }
-		else if (this.state.selected === 'CLUE_SCROLLS_MASTER') { return Metric.CLUE_SCROLLS_MASTER }
-		else if (this.state.selected === 'LAST_MAN_STANDING') { return Metric.LAST_MAN_STANDING }
-		else if (this.state.selected === 'PVP_ARENA') { return Metric.PVP_ARENA }
-		else if (this.state.selected === 'SOUL_WARS_ZEAL') { return Metric.SOUL_WARS_ZEAL }
-		else if (this.state.selected === 'GUARDIANS_OF_THE_RIFT') { return Metric.GUARDIANS_OF_THE_RIFT }
-		else if (this.state.selected === 'COLOSSEUM_GLORY') { return Metric.COLOSSEUM_GLORY }
-		else if (this.state.selected === 'COLLECTIONS_LOGGED') { return Metric.COLLECTIONS_LOGGED }
-		else if (this.state.selected === 'OVERALL') { return Metric.OVERALL }
-		else if (this.state.selected === 'ATTACK') { return Metric.ATTACK }
-		else if (this.state.selected === 'DEFENCE') { return Metric.DEFENCE }
-		else if (this.state.selected === 'STRENGTH') { return Metric.STRENGTH }
-		else if (this.state.selected === 'HITPOINTS') { return Metric.HITPOINTS }
-		else if (this.state.selected === 'RANGED') { return Metric.RANGED }
-		else if (this.state.selected === 'PRAYER') { return Metric.PRAYER }
-		else if (this.state.selected === 'MAGIC') { return Metric.MAGIC }
-		else if (this.state.selected === 'COOKING') { return Metric.COOKING }
-		else if (this.state.selected === 'WOODCUTTING') { return Metric.WOODCUTTING }
-		else if (this.state.selected === 'FLETCHING') { return Metric.FLETCHING }
-		else if (this.state.selected === 'FISHING') { return Metric.FISHING }
-		else if (this.state.selected === 'FIREMAKING') { return Metric.FIREMAKING }
-		else if (this.state.selected === 'CRAFTING') { return Metric.CRAFTING }
-		else if (this.state.selected === 'SMITHING') { return Metric.SMITHING }
-		else if (this.state.selected === 'MINING') { return Metric.MINING }
-		else if (this.state.selected === 'HERBLORE') { return Metric.HERBLORE }
-		else if (this.state.selected === 'AGILITY') { return Metric.AGILITY }
-		else if (this.state.selected === 'THIEVING') { return Metric.THIEVING }
-		else if (this.state.selected === 'SLAYER') { return Metric.SLAYER }
-		else if (this.state.selected === 'FARMING') { return Metric.FARMING }
-		else if (this.state.selected === 'RUNECRAFTING') { return Metric.RUNECRAFTING }
-		else if (this.state.selected === 'HUNTER') { return Metric.HUNTER }
-		else if (this.state.selected === 'CONSTRUCTION') { return Metric.CONSTRUCTION }
-		else if (this.state.selected === 'SAILING') { return Metric.SAILING }
 	}
 	onTitleChange = (e) => {
 		// console.log(e.nativeEvent.data);
