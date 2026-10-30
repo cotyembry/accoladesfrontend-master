@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import { WOMClient, Metric } from '@wise-old-man/utils';
+import { WOMClient, Metric, METRICS } from '@wise-old-man/utils';
 import {Component, useState} from 'react';
 
 const client = new WOMClient({
@@ -66,121 +66,6 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 
-		this.metric = [
-			'EHP',
-			'EHB',
-			'ABYSSAL_SIRE',
-			'ALCHEMICAL_HYDRA',
-			'AMOXLIATL',
-			'ARAXXOR',
-			'ARTIO',
-			'BARROWS_CHESTS',
-			'BRYOPHYTA',
-			'CALLISTO',
-			'CALVARION',
-			'CERBERUS',
-			'CHAMBERS_OF_XERIC',
-			'CHAMBERS_OF_XERIC_CM',
-			'CHAOS_ELEMENTAL',
-			'CHAOS_FANATIC',
-			'COMMANDER_ZILYANA',
-			'CORPOREAL_BEAST',
-			'CRAZY_ARCHAEOLOGIST',
-			'DAGANNOTH_PRIME',
-			'DAGANNOTH_REX',
-			'DAGANNOTH_SUPREME',
-			'DERANGED_ARCHAEOLOGIST',
-			'DOOM_OF_MOKHAIOTL',
-			'DUKE_SUCELLUS',
-			'GENERAL_GRAARDOR',
-			'GIANT_MOLE',
-			'GROTESQUE_GUARDIANS',
-			'HESPORI',
-			'KALPHITE_QUEEN',
-			'KING_BLACK_DRAGON',
-			'KRAKEN',
-			'KREEARRA',
-			'KRIL_TSUTSAROTH',
-			'LUNAR_CHESTS',
-			'MIMIC',
-			'NEX',
-			'NIGHTMARE',
-			'PHOSANIS_NIGHTMARE',
-			'OBOR',
-			'PHANTOM_MUSPAH',
-			'SARACHNIS',
-			'SCORPIA',
-			'SCURRIUS',
-			'SHELLBANE_GRYPHON',
-			'SKOTIZO',
-			'SOL_HEREDIT',
-			'SPINDEL',
-			'TEMPOROSS',
-			'THE_GAUNTLET',
-			'THE_CORRUPTED_GAUNTLET',
-			'THE_HUEYCOATL',
-			'THE_LEVIATHAN',
-			'THE_ROYAL_TITANS',
-			'THE_WHISPERER',
-			'THEATRE_OF_BLOOD',
-			'THEATRE_OF_BLOOD_HARD_MODE',
-			'THERMONUCLEAR_SMOKE_DEVIL',
-			'TOMBS_OF_AMASCUT',
-			'TOMBS_OF_AMASCUT_EXPERT',
-			'TZKAL_ZUK',
-			'TZTOK_JAD',
-			'VARDORVIS',
-			'VENENATIS',
-			'VETION',
-			'VORKATH',
-			'WINTERTODT',
-			'YAMA',
-			'ZALCANO',
-			'ZULRAH',
-			'LEAGUE_POINTS',
-			'BOUNTY_HUNTER_HUNTER',
-			'BOUNTY_HUNTER_ROGUE',
-			'CLUE_SCROLLS_ALL',
-			'CLUE_SCROLLS_BEGINNER',
-			'CLUE_SCROLLS_EASY',
-			'CLUE_SCROLLS_MEDIUM',
-			'CLUE_SCROLLS_HARD',
-			'CLUE_SCROLLS_ELITE',
-			'CLUE_SCROLLS_MASTER',
-			'LAST_MAN_STANDING',
-			'PVP_ARENA',
-			'SOUL_WARS_ZEAL',
-			'GUARDIANS_OF_THE_RIFT',
-			'COLOSSEUM_GLORY',
-			'COLLECTIONS_LOGGED',
-			'OVERALL',
-			'ATTACK',
-			'DEFENCE',
-			'STRENGTH',
-			'HITPOINTS',
-			'RANGED',
-			'PRAYER',
-			'MAGIC',
-			'COOKING',
-			'WOODCUTTING',
-			'FLETCHING',
-			'FISHING',
-			'FIREMAKING',
-			'CRAFTING',
-			'SMITHING',
-			'MINING',
-			'HERBLORE',
-			'AGILITY',
-			'THIEVING',
-			'SLAYER',
-			'FARMING',
-			'RUNECRAFTING',
-			'HUNTER',
-			'CONSTRUCTION',
-			'SAILING',
-		];
-
-
 		this.state = {
 			competitionTitleName: 'Callisto Boss of the Week',
 			message: '',
@@ -189,8 +74,8 @@ class App extends Component {
 			noUpdateNeeded: [],
 			updateMessage: '',
 			selected: '',
-			startDate: '',
-			endDate: '',
+			startDate: convertToLocalDateTimeFromUTC(getThisSundayMidnight()),
+			endDate: convertToLocalDateTimeFromUTC(getSaturdayAfterSunday(getThisSundayMidnight())),
 		}
 	}
 	async componentDidMount() {
@@ -204,9 +89,16 @@ class App extends Component {
 		// console.log(this.state.startDate);
 		// console.log(addHoursToDate(new Date(this.state.startDate), 5).toISOString())
 
+
+		console.log('button clicked', METRICS);
+
+		
+		
 		let startDate = new Date(this.state.startDate),
 			endDate = new Date(this.state.endDate);
+		console.log('would be sending:', {startDate, endDate})
 		//
+		return;
 		const newCompetition = await client.competitions.createCompetition({
 			title: this.state.competitionTitleName,
 			metric: this.getMetric(),
@@ -790,7 +682,7 @@ class App extends Component {
 				</div>
 				<div style={{border: '1px solid white', borderRadius: '4px',}}>
 					Competition Title: <input value={this.state.competitionTitleName} id='competitionTitleInput' onChange={this.onTitleChange} />
-						<Dropdown options={this.metric} onChange={handleSelection} setState={this.setState} />
+						<Dropdown options={Object.keys(Metric)} onChange={handleSelection} setState={this.setState} />
 						<br />
 						{/* Start
 							Jul 13, 12:00 AM 
@@ -821,13 +713,46 @@ class App extends Component {
 	}
 }
 
+function getThisSundayMidnight() {
+    const now = new Date();
+
+    // getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+    const currentDay = now.getDay();
+
+    // Calculate days until Sunday (0 means today is Sunday)
+    const daysUntilSunday = (7 - currentDay) % 7;
+
+    // Create new Date for Sunday
+    const sunday = new Date(now);
+    sunday.setDate(now.getDate() + daysUntilSunday);
+
+    // Set time to midnight (00:00:00.000)
+    sunday.setHours(0, 0, 0, 0);
+    return sunday;
+}
+/**
+ * Returns the Saturday after a given Sunday date at 11:59 PM.
+ * @param {Date} sundayDate - The Sunday date (midnight) from getThisSundayMidnight().
+ */
+function getSaturdayAfterSunday(sundayDate) {
+    if (!(sundayDate instanceof Date) || isNaN(sundayDate)) {
+        throw new Error("Invalid Date object provided.");
+    }
+
+    const saturday = new Date(sundayDate);
+    saturday.setDate(sundayDate.getDate() + 6); // Saturday after Sunday
+    saturday.setHours(23, 59, 0, 0); // 11:59 PM
+
+    return saturday;
+}
 function DateTimePickerStart({onChange}) {
   // Initialize with current local date & time
   const [startDate, setDateTime] = useState(() => {
-    const now = new Date();
-    // Adjust for local timezone so it matches the user's clock
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-    return local.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+    // const now = new Date();
+    // // Adjust for local timezone so it matches the user's clock
+    // const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    // return local.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+	return convertToLocalDateTimeFromUTC(getThisSundayMidnight().toISOString()); //.slice(0, 16);
   });
 
   // Handle change
@@ -847,6 +772,7 @@ function DateTimePickerStart({onChange}) {
         type="datetime-local"
         value={startDate}
         onChange={handleChange}
+		// timezone="system"
       />
       {/* <p>Selected: {startDate}</p> */}
     </div>
@@ -856,10 +782,13 @@ function DateTimePickerStart({onChange}) {
 function DateTimePickerEnd({onChange}) {
   // Initialize with current local date & time
   const [endDate, setDateTime] = useState(() => {
-    const now = new Date();
-    // Adjust for local timezone so it matches the user's clock
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-    return local.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+    // const now = new Date();
+    // // Adjust for local timezone so it matches the user's clock
+    // const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    // return local.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+	let sundayMidnight = getThisSundayMidnight(),
+		saturdayTime = getSaturdayAfterSunday(sundayMidnight);
+	return convertToLocalDateTimeFromUTC(saturdayTime.toISOString()); //.slice(0, 16);
   });
 
   // Handle change
@@ -879,10 +808,28 @@ function DateTimePickerEnd({onChange}) {
         type="datetime-local"
         value={endDate}
         onChange={handleChange}
+		// timezone="system"
       />
       {/* <p>Selected: {endDate}</p> */}
     </div>
   );
+}
+function convertToLocalDateTimeFromUTC(utcString) {
+    // Parse the UTC date
+    const utcDate = new Date(utcString);
+
+    // Get local components
+    const year = utcDate.getFullYear();
+    const month = String(utcDate.getMonth() + 1).padStart(2, '0');
+    const day = String(utcDate.getDate()).padStart(2, '0');
+    const hours = String(utcDate.getHours()).padStart(2, '0');
+    const minutes = String(utcDate.getMinutes()).padStart(2, '0');
+
+    // Format for datetime-local (no timezone)
+    const localDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+    // Assign to input
+    return localDateTime;
 }
 
 /**
