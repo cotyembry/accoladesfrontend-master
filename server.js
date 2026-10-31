@@ -1,4 +1,5 @@
-const { token, guildId, eventGeneralId } = require('./config.json');
+const { REST, Routes, Client, GatewayIntentBits } = require('discord.js');
+const { token, guildId, eventGeneralId, clientId } = require('./config.json');
 const express = require('express');
 const app = express();
 const port = process.env.SERVER_PORT || 25330;
@@ -69,5 +70,23 @@ app.get('/createEvent', async (req, res) => {
         res.send('Not enough parameters to create event');
     }
 });
-app.listen(process.env.SERVER_PORT, "0.0.0.0")
 
+app.listen(process.env.SERVER_PORT, "0.0.0.0");
+
+
+//login with Accolades bot now to be able to respond to commands from the discord server
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+client.once('clientReady', () => {
+  console.log(`🤖 Logged in as ${client.user.tag}`);
+});
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+
+  if (interaction.commandName === 'ping') {
+    await interaction.reply('🏓 Pong!');
+  }
+});
+
+client.login(token);
