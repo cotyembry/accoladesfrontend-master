@@ -600,6 +600,21 @@ class App extends Component {
 						</div>	
 					</div>
 				</div>
+				<div style={{border: '1px solid white', borderRadius: '4px',}}>
+					<div style={{display: 'flex',}}>
+						<div
+							style={{
+								...styles.Button,
+							}}
+							tooltip='click to renew Accolades bot server'
+							onClick={async () => {
+								window.open(`https://bot-hosting.net/a/billings`);
+							}}
+						>
+							{'Click to renew Accolades bot server (must be done every 4 days with current free plan'}
+						</div>	
+					</div>
+				</div>
 			</div>
 		);
 	}
