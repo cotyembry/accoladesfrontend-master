@@ -1,3 +1,6 @@
+/**
+ *  You must renew the bot every 4 days at: https://bot-hosting.net/a/billings
+ */
 const { REST, Routes, Client, GatewayIntentBits } = require('discord.js');
 const { token, guildId, eventGeneralId, clientId } = require('./config.json');
 const express = require('express');
