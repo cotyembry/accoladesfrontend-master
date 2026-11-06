@@ -82,7 +82,7 @@ class App extends Component {
 	async componentDidMount() {
 				
 	}
-	async createCompetition() {		
+	async createCompetition(postWithEventBot = true) {		
 		let startDate = new Date(this.state.startDate),
 			endDate = new Date(this.state.endDate);
 		//
@@ -108,40 +108,31 @@ class App extends Component {
 
 		console.log('done:', newCompetition, ', now creating discord event...');
 
-		const eventData = {
-			name: this.state.competitionTitleName,
-			privacy_level: 2, // GUILD_ONLY
-			scheduled_start_time: startDate.toString(),
-			scheduled_end_time: endDate.toString(),
-			entity_type: 3, // EXTERNAL
-			entity_metadata_location: "Gielinor",
-			description: `${this.state.competitionTitleName}\n\nhttps://wiseoldman.net/competitions/${newCompetition.competition.id}`,
-			event_just_created_id: newCompetition.competition.id
-		};
+		if (postWithEventBot) {
+			const eventData = {
+				name: this.state.competitionTitleName,
+				privacy_level: 2, // GUILD_ONLY
+				scheduled_start_time: startDate.toString(),
+				scheduled_end_time: endDate.toString(),
+				entity_type: 3, // EXTERNAL
+				entity_metadata_location: "Gielinor",
+				description: `${this.state.competitionTitleName}\n\nhttps://wiseoldman.net/competitions/${newCompetition.competition.id}`,
+				event_just_created_id: newCompetition.competition.id
+			};
 
-		const url = new URL(`https://accolades.apps.bot-hosting.cloud/createEvent`);
-		url.search = new URLSearchParams(eventData).toString();
+			const url = new URL(`https://accolades.apps.bot-hosting.cloud/createEvent`);
+			url.search = new URLSearchParams(eventData).toString();
 
-		//@TODO - still getting a error: Access to fetch at 'https://accolades.apps.bot-hosting.cloud/createEvent?name=testing+event+name&privacy_level=2&scheduled_start_time=Sun+Nov+01+2026+00%3A00%3A00+GMT-0500+%28Central+Daylight+Time%29&scheduled_end_time=Sat+Nov+07+2026+23%3A59%3A00+GMT-0600+%28Central+Standard+Time%29&entity_type=3&entity_metadata_location=Gielinor&description=Raid+of+the+Week%0A%0Ahttps%3A%2F%2Fwiseoldman.net%2Fcompetitions%2F163626' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-		fetch(
-			url.href
-			
-		)
-			.then(res => res.json())
-			.then(data => console.log("Event created:", data))
-			.catch(err => console.error("Error:", err));
-
-		// fetch(
-		// 	url,
-		// 	{
-		// 		method: 'GET',
-		// 		mode: 'no-cors'
-		// 	}
-		// )
-		// 	.then(res => res.json())
-		// 	.then(data => console.log("Event created:", data))
-		// 	.catch(err => console.error("Error:", err));
-		
+			//@TODO - still getting a error: Access to fetch at 'https://accolades.apps.bot-hosting.cloud/createEvent?name=testing+event+name&privacy_level=2&scheduled_start_time=Sun+Nov+01+2026+00%3A00%3A00+GMT-0500+%28Central+Daylight+Time%29&scheduled_end_time=Sat+Nov+07+2026+23%3A59%3A00+GMT-0600+%28Central+Standard+Time%29&entity_type=3&entity_metadata_location=Gielinor&description=Raid+of+the+Week%0A%0Ahttps%3A%2F%2Fwiseoldman.net%2Fcompetitions%2F163626' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+			fetch(
+				url.href
+				
+			)
+				.then(res => res.json())
+				.then(data => console.log("Event created:", data))
+				.catch(err => console.error("Error:", err));
+		}
+		//
 	}
 	async runCheck() {
 		// 
@@ -597,12 +588,26 @@ class App extends Component {
 							}}
 						>
 							
-							{'Click to create competition'}
+							{'Click to create competition and post event & message in discord'}
+						</div>	
+					</div>
+					<div style={{display: 'flex',}}>
+						<div
+							style={{
+								...styles.Button,
+							}}
+							tooltip='click to create competition'
+							onClick={async () => {
+								this.createCompetition(false);
+							}}
+						>
+							
+							{'Click to create competition without posting & creating event in discord'}
 						</div>	
 					</div>
 				</div>
 				<div style={{border: '1px solid white', borderRadius: '4px',}}>
-					<div style={{display: 'flex',}}>
+					<div style={{display: 'flex', justifyContent: 'flex-end'}}>
 						<div
 							style={{
 								...styles.Button,
