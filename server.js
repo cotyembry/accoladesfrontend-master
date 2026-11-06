@@ -21,6 +21,7 @@ app.get('/createEvent', async (req, res) => {
         && req.query.scheduled_start_time
         && req.query.scheduled_end_time
         && req.query.entity_type
+        && req.query.event_just_created_id
     ) {
         const eventData = {
             name: req.query.name,
@@ -56,7 +57,7 @@ app.get('/createEvent', async (req, res) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    content: 'https://discord.com/events/' + eventJustCreatedId + '\n\n@Events @1281049707665428552'
+                    content: 'https://discord.com/events/' + req.query.event_just_created_id + '\n\n@Events @1281049707665428552'
                 })
             });
 

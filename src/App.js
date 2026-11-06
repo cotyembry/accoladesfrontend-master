@@ -115,7 +115,8 @@ class App extends Component {
 			scheduled_end_time: endDate.toString(),
 			entity_type: 3, // EXTERNAL
 			entity_metadata_location: "Gielinor",
-			description: `${this.state.competitionTitleName}\n\nhttps://wiseoldman.net/competitions/${newCompetition.competition.id}`
+			description: `${this.state.competitionTitleName}\n\nhttps://wiseoldman.net/competitions/${newCompetition.competition.id}`,
+			event_just_created_id: newCompetition.competition.id
 		};
 
 		const url = new URL(`https://accolades.apps.bot-hosting.cloud/createEvent`);
