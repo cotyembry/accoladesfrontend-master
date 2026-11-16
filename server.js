@@ -61,7 +61,8 @@ app.get('/createEvent', async (req, res) => {
                 },
                 body: JSON.stringify({
                     // content: 'https://discord.com/events/' + req.query.event_just_created_id + '\n\n@Events @1281049707665428552'
-                    content: `${inviteLink}\n\n@Events @1281049707665428552`
+                    content: `${inviteLink}\n\n<@&Events> <@&1281049707665428552>`
+                    //<@&${ROLE_ID}>
                 })
             });
 
