@@ -48,6 +48,9 @@ app.get('/createEvent', async (req, res) => {
             }),
             data = await res2.json();
 
+            const inviteLink = `https://discord.com/events/${guildId}/${data.id}`;
+            // console.log("Invite link:", inviteLink);
+
 
             //2 post the event information in #event-general using the discord bot
             const res3 = await fetch(`https://discord.com/api/v10/channels/${eventGeneralId}/messages`, {
@@ -57,7 +60,8 @@ app.get('/createEvent', async (req, res) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    content: 'https://discord.com/events/' + req.query.event_just_created_id + '\n\n@Events @1281049707665428552'
+                    // content: 'https://discord.com/events/' + req.query.event_just_created_id + '\n\n@Events @1281049707665428552'
+                    content: `${inviteLink}\n\n@Events @1281049707665428552`
                 })
             });
 

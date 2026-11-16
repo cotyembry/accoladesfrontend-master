@@ -25,18 +25,56 @@ app.get('/createEvent', async (req, res) => {
         //     },
         //     description: req.query.description
         // };
+
+        const today = new Date();
+
+        // Make a copy to avoid mutating the original
+        const startDate = new Date(today);
+
+        // Set to tomorrow's date
+        startDate.setDate(startDate.getDate() + 1);
+
+        // Set the time to 8:00:00 AM
+        startDate.setHours(8, 0, 0, 0);
+        const endDate = new Date(today);
+        // Set to tomorrow's date
+        endDate.setDate(endDate.getDate() + 2);
+
+        // Set the time to 8:00:00 AM
+        endDate.setHours(8, 0, 0, 0);
+
+        const eventData = {
+				name: 'test event',
+				privacy_level: 2, // GUILD_ONLY
+				scheduled_start_time: startDate.toISOString(),
+				scheduled_end_time: endDate.toISOString(),
+				entity_type: 3, // EXTERNAL
+				// entity_metadata_location: "Gielinor",
+                entity_metadata: {
+                    location: "Gielinor"
+                },
+				// description: `${this.state.competitionTitleName}\n\nhttps://wiseoldman.net/competitions/${newCompetition.competition.id}`,
+                description: 'test description',
+				event_just_created_id: 'wiseoldman competition id'
+			};
         try {
            // res.send('1 Creating Event' + JSON.stringify(req.query));
            //create the event in discord
-            // let res2 = await fetch(`https://discord.com/api/v10/guilds/${guildId}/scheduled-events`, {
-            //     method: "POST",
-            //     headers: {
-            //         "Authorization": `Bot ${token}`,
-            //         "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify(eventData)
-            // }),
-            // responseData = await res2.json();
+            let res2 = await fetch(`https://discord.com/api/v10/guilds/${guildId}/scheduled-events`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bot ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(eventData)
+            }),
+            responseData = await res2.json();
+
+            console.log(responseData)
+            // console.log('url =', responseData.url)
+            const inviteLink = `https://discord.com/events/${guildId}/${responseData.id}`;
+            console.log("Invite link:", inviteLink);
+
 
             // let eventJustCreatedId = responseData.id;
             /*
@@ -57,18 +95,19 @@ app.get('/createEvent', async (req, res) => {
             */
            
             //2 post the event information in #event-general using the discord bot
-            const res3 = await fetch(`https://discord.com/api/v10/channels/${eventGeneralId}/messages`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bot ${token}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    content: 'https://discord.com/events/1226692492322148433/1565752751101575198\n\n@ Events @ 1281049707665428552'
-                })
-            });
+            // const res3 = await fetch(`https://discord.com/api/v10/channels/${eventGeneralId}/messages`, {
+            //     method: "POST",
+            //     headers: {
+            //         "Authorization": `Bot ${token}`,
+            //         "Content-Type": "application/json"
+            //     },
+            //     body: JSON.stringify({
+            //         content: 'https://discord.com/events/1226692492322148433/1565752751101575198\n\n@ Events @ 1281049707665428552'
+            //     })
+            // });
 
-            res.send(JSON.stringify(res3.json()));
+            // res.send(JSON.stringify(res3.json()));
+            res.send(JSON.stringify(responseData));
         }
         catch (error) {
             res.send('Error creating discord event');
