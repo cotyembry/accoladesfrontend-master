@@ -69,6 +69,8 @@ class App extends Component {
 		this.state = {
 			// competitionTitleName: 'Callisto Boss of the Week',
 			competitionTitleName: 'Raid of the Week',
+			competitions: [0],
+			selectedValues: [],
 			message: '',
 			checkIsRunning: false,
 			toUpdate: [],
@@ -88,7 +90,7 @@ class App extends Component {
 		//
 		console.log('creating wise old man competition...');
 
-		if (this.state.selected === '') {
+		if (this.state.selectedValues.length <= 0) {
 			alert('Please select a competition option to continue');
 
 			return;
@@ -96,7 +98,8 @@ class App extends Component {
 
 		const newCompetition = await client.competitions.createCompetition({
 			title: this.state.competitionTitleName,
-			metric: Metric[this.state.selected],
+			// metric: Metric[this.state.selectedValue],
+			metrics: this.state.selectedValues.map(value => Metric[value]),
 			// startsAt: addHoursToDate(new Date(this.state.startDate), 5).toISOString(), 	//need plus 5 hours to get to central time it seems from my central local time
 			// endsAt: addHoursToDate(new Date(this.state.endDate), 5).toISOString(),		//need plus 5 hours to get to central time it seems from my central local time
 			startsAt: startDate,
@@ -132,6 +135,35 @@ class App extends Component {
 				.then(data => console.log("Event created:", data))
 				.catch(err => console.error("Error:", err));
 		}
+		//
+	}
+	async createTestCompetition(postWithEventBot = true) {		
+		let startDate = new Date(this.state.startDate),
+			endDate = new Date(this.state.endDate);
+		//
+		console.log('creating wise old man competition...');
+
+		if (this.state.selectedValues.length <= 0) {
+			alert('Please select a competition option to continue');
+
+			return;
+		}
+
+		const newCompetition = await client.competitions.createCompetition({
+			title: this.state.competitionTitleName,
+			// metrics: [Metric['SMITHING'], Metric['ARTIO']],
+			metrics: this.state.selectedValues.map(value => Metric[value]),
+			// startsAt: addHoursToDate(new Date(this.state.startDate), 5).toISOString(), 	//need plus 5 hours to get to central time it seems from my central local time
+			// endsAt: addHoursToDate(new Date(this.state.endDate), 5).toISOString(),		//need plus 5 hours to get to central time it seems from my central local time
+			startsAt: startDate,
+			endsAt: endDate,
+			groupId: 5404,
+			groupVerificationCode: '687-342-029',
+			// participants: ['psikoi', 'usbc', 'sethmare']
+		});
+
+		console.log('done:', newCompetition);
+
 		//
 	}
 	async runCheck() {
@@ -566,14 +598,50 @@ class App extends Component {
 				</div>
 				<div style={{border: '1px solid white', borderRadius: '4px',}}>
 					Competition Title: <input value={this.state.competitionTitleName} id='competitionTitleInput' onChange={this.onTitleChange} />
-						<Dropdown options={Object.keys(Metric)} onChange={handleSelection} setState={this.setState} />
+						{this.state.competitions.map((value, i) => 
+							<Dropdown
+								key={i}
+								options={Object.keys(Metric)}
+								onChange={(value) => {
+									let copy = [...this.state.selectedValues];
+									copy[i] = value;
+									this.setState({
+										selectedValues: copy
+									})
+								}}
+								setState={this.setState} />
+						)}
+						
 						<br />
-						{/* Start
+						{/* 
+						
+						const handleSelection = (value) => {
+							this.setState({
+								selected: value,
+							})
+						};
+						
+							Start
 							Jul 13, 12:00 AM 
 							End
 							Jul 19, 11:59 PM */}
 						{/* <DatePickerExample />
 						<DatePickerEnd /> */}
+						<div
+							style={{
+								...styles.Button,
+							}}
+							tooltip='click to add competition box'
+							onClick={async () => {
+								this.setState({
+									competitions: [...this.state.competitions, 1]
+								})
+							}}
+						>
+							
+							{'Add Competition Dropdown'}
+						</div>	
+
 						<DateTimePickerStart onChange={handleStartDate} />
 						<DateTimePickerEnd onChange={handleEndDate} />
 				
